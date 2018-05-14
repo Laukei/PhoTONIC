@@ -69,7 +69,11 @@ class Positioner:
         '''
         ANC350v4lib.configureAQuadBOut(self.device, axisNo, enable, ctypes.c_double(resolution), ctypes.c_double(clock))
        
-    
+ 
+    def configureDutyCycle(self, enable, period, offTime):
+        ANC350v4lib.configureDutyCycle(self.device, enable, ctypes.c_double(period), ctypes.c_double(offTime))
+
+
     def configureExtTrigger(self, axisNo, mode):
         '''
         Enables the input trigger for steps.
@@ -188,7 +192,24 @@ class Positioner:
         ANC350v4lib.discover(ifaces, ctypes.byref(devCount))
         return devCount.value
     
-    
+
+    def enableRefAutoReset(self, axisNo, enable):
+        ANC350v4lib.enableRefAutoReset(self.device, axisNo, enable)
+
+
+    def enableRefAutoUpdate(self, axisNo, enable):
+        ANC350v4lib.enableRefAutoUpdate(self.device, axisNo, enable)
+
+
+    def enableSensor(self, enable):
+        ANC350v4lib.enableSensor(self.device, enable)
+
+
+    def enableTrace(self):
+        # unclear what this function does - exists in dll, not documented anywhere
+        ANC350v4lib.enableTrace()
+
+
     def getActuatorName(self, axisNo):
         '''
         Get the name of the currently selected actuator
@@ -345,6 +366,25 @@ class Positioner:
         ANC350v4lib.getPosition(self.device, axisNo, ctypes.byref(position))
         return position.value
     
+
+    def getRefPosition(self, axisNo):
+        '''
+        Retrieves the current reference position. For linear type actuators the position unit is m; for goniometers and rotators it is degree.
+
+        Parameters
+            axisNo  Axis number (0 ... 2)
+        Returns
+            position    Output: Current position [m] or [degrees]
+        '''
+        refposition = ctypes.c_double()
+        valid = ctypes.c_int()
+        ANC350v4lib.getRefPosition(self.device, axisNo, ctypes.byref(refposition), ctypes.byref(valid))
+        return refposition.value, valid.value
+
+
+    def loadLutFile(self, axisNo, filename):
+        ANC350v4lib.loadLutFile(self.device, axisNo, ctypes.byref(filename))
+
     
     def measureCapacitance(self, axisNo):
         '''
@@ -359,6 +399,14 @@ class Positioner:
         ANC350v4lib.measureCapacitance(self.device, axisNo, ctypes.byref(cap))
         return cap.value
    
+
+    def moveReference(self, axisNo):
+        ANC350v4lib.moveReference(self.device, axisNo)
+
+
+    def resetPosition(self, axisNo):
+        ANC350v4lib.resetPosition(self.device, axisNo)
+
 
     def saveParams(self):
         '''
@@ -450,6 +498,10 @@ class Positioner:
         ANC350v4lib.setFrequency(self.device, axisNo, ctypes.c_double(frequency))
         
    
+    def setTargetGround(self, axisNo, enable):
+        ANC350v4lib.setTargetGround(self.device, axisNo, enable)
+
+
     def setTargetPosition(self, axisNo, target):
         '''
         Sets the target position for automatic motion, see ANC_startAutoMove. 

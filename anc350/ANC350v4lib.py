@@ -111,6 +111,23 @@ getActuatorType = getattr(anc350v4,"ANC_getActuatorType")
 measureCapacitance = getattr(anc350v4,"ANC_measureCapacitance")
 saveParams = getattr(anc350v4,"ANC_saveParams")
 
+
+configureDutyCycle = getattr(anc350v4,"ANC_configureDutyCycle")
+enableRefAutoReset = getattr(anc350v4,"ANC_enableRefAutoReset")
+enableRefAutoUpdate = getattr(anc350v4,"ANC_enableRefAutoUpdate")
+enableSensor = getattr(anc350v4,"ANC_enableSensor")
+enableTrace = getattr(anc350v4,"ANC_enableTrace")
+getRefPosition = getattr(anc350v4,"ANC_getRefPosition")
+loadLutFile = getattr(anc350v4,"ANC_loadLutFile")
+moveReference = getattr(anc350v4,"ANC_moveReference")
+registerExternalIp = getattr(anc350v4,"ANC_registerExternalIp")
+resetPosition = getattr(anc350v4,"ANC_resetPosition")
+setTargetGround = getattr(anc350v4,"ANC_setTargetGround")
+
+
+
+
+
 #set error checking & handling
 discover.errcheck = checkError
 connect.errcheck = checkError
@@ -143,3 +160,14 @@ getActuatorName.errcheck = checkError
 getActuatorType.errcheck = checkError
 measureCapacitance.errcheck = checkError
 saveParams.errcheck = checkError
+configureDutyCycle.errcheck = checkError
+enableRefAutoReset.errcheck = checkError
+enableRefAutoUpdate.errcheck = checkError
+enableSensor.errcheck = checkError
+enableTrace.errcheck = checkError
+getRefPosition.errcheck = checkError
+loadLutFile.errcheck = checkError
+moveReference.errcheck = checkError
+registerExternalIp.errcheck = checkError
+resetPosition.errcheck = checkError
+setTargetGround.errcheck = checkError
