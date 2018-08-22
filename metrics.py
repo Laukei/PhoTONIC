@@ -28,3 +28,9 @@ class Pos:
 
 	def nm(self):
 		return self.position * 1e9
+
+	def __str__(self):
+		return f'{self.position}'
+
+	def __repr__(self):
+		return f'Pos({self.position})'

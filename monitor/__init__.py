@@ -41,7 +41,7 @@ class ANC350Monitor(threading.Thread):
 
 
     def run(self):
-        logging.info('monitor running as {}'.format(threading.currentThread().getName()))
+        logging.debug('monitor running as {}'.format(threading.currentThread().getName()))
         while True:
             self._check_homing()
             self._get_instructions()
@@ -82,7 +82,7 @@ class ANC350Monitor(threading.Thread):
                 kwargs = {} if len(message) < 4 else message[3]
                 f = getattr(self,message[1])
                 for_reply = f(*args,**kwargs)
-                logging.info('instruction {} has reply {}'.format(message,for_reply))
+                logging.debug('instruction {} has reply {}'.format(message,for_reply))
                 if for_reply != None:
                     self._reply([message[0],for_reply])
                 else:
@@ -113,6 +113,12 @@ class ANC350Monitor(threading.Thread):
         self.p.startAutoMove(axis_id,True,False)
         self._add_homing(axis)
         self._enable_movement_on_axis(axis)
+
+
+    def blind_move(self,axis,backward):
+        axis_id = axis_map[axis]
+        self._enable_movement_on_axis(axis)
+        self.p.startSingleStep(axis_id,backward)
 
 
     def get_moving(self):

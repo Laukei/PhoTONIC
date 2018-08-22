@@ -7,11 +7,16 @@ from metrics import Pos
 from monitor import launch_monitor_in_thread
 from monitor import axis_map
 
+MOVE_FORWARD = False
+MOVE_BACKWARD = True
+X = 'x'
+Y = 'y'
+Z = 'z'
 
 default_positions = {
-	'x': Pos(2500,'um'),
-	'y': Pos(2500,'um'),
-	'z': Pos(0,'um')
+	X: Pos(2500,'um'),
+	Y: Pos(2500,'um'),
+	Z: Pos(0,'um')
 }
 
 class Controller:
@@ -23,11 +28,27 @@ class Controller:
 		self._outstanding_replies = set()
 
 
+	def get_position(self,axis):
+		return Pos(self.p.getPosition(axis_map[axis]),'m')
+
+
+	def set_amplitude(self,axis,voltage):
+		assert voltage > 0 and voltage <= 60
+		self.p.setAmplitude(axis_map[axis],voltage)
+
+
+	def set_frequency(self,axis,frequency):
+		assert frequency > 0 and frequency <= 1000
+		self.p.setFrequency(axis_map[axis],frequency)
+
+
 	def reset_position(self):
 		'''
 		moves the X, Y, and Z axes to their default position
 		'''
 		for axis in axis_map:
+			self.set_frequency(axis,200)
+			self.set_amplitude(axis,30)
 			messageid = self.home_to_position_um(axis,default_positions.get(axis).um(),False)
 			self._outstanding_replies.add(messageid)
 		for axis in axis_map:
@@ -36,11 +57,15 @@ class Controller:
 		assert len(self._outstanding_replies) == 0
 
 
-	def blind_move(self,axis,**kwargs):
+	def blind_move(self,axis,backward,number=1):
 		'''
-		moves without feedback a certain number of sawtooth waves
+		moves a certain number of sawtooth waves
 		'''
-		pass
+		for i in range(number):
+			messageid = self._send(['blind_move',(axis,backward)])
+			reply = self._wait_for_reply()
+			assert reply[0] == messageid
+			reply = self.wait_til_stopped()
 
 
 	def home_to_position_um(self,axis,position_um,wait=True):
@@ -66,7 +91,7 @@ class Controller:
 			if len(reply[1]) == 0:
 				break
 			else:
-				logging.info('still moving, waiting...')
+				logging.debug('still moving, waiting...')
 				time.sleep(0.1)
 
 
@@ -78,7 +103,7 @@ class Controller:
 		message = self._replies.get()
 		# except Empty:
 		# 	message = None
-		logging.info('reply received: {}'.format(message))
+		logging.debug('reply received: {}'.format(message))
 		return message
 
 
